@@ -269,7 +269,7 @@ end
 
 --{{
 local tools = {
-    terminal = "sakura",
+    terminal = "urxvtcd",
     system = {
         filemanager = "pcmanfm",
         taskmanager = "lxtask",
@@ -281,13 +281,13 @@ local tools = {
 }
 
 tools.browser.primary = os.getenv("BROWSER") or "firefox"
-tools.browser.secondary = ({chromium="firefox", firefox="chromium"})[tools.browser.primary]
+tools.browser.secondary = "chromium"
 
 -- alternative: override
 --tools.browser.primary = "google-chrome-stable"
 --tools.browser.secondary = "firefox"
 
-tools.editor.primary = os.getenv("EDITOR") or "gvim"
+tools.editor.primary = "emacs"
 tools.editor.secondary = ({emacs="gvim", gvim="emacs"})[tools.editor.primary]
 
 -- alternative: override
@@ -364,7 +364,11 @@ end
 -- {{{ Customized functions
 
 customization.func.system_lock = function ()
-    awful.util.spawn("xscreensaver-command -l")
+   local s
+   for s = 1, screen.count() do
+      awful.tag.viewnone(s)
+   end
+   awful.util.spawn("xtrlock")
 end
 
 customization.func.system_suspend = function ()
@@ -1658,76 +1662,10 @@ do
     ))
 end
 
-customization.widgets.mpdstatus = wibox.widget.textbox()
-customization.widgets.mpdstatus:set_ellipsize("end")
-vicious.register(customization.widgets.mpdstatus, vicious.widgets.mpd,
-  function (mpdwidget, args)
-    local text = nil
-    local state = args["{state}"]
-    if state then
-      if state == "Stop" then 
-        text = ""
-      else 
-        text = args["{Artist}"]..' - '.. args["{Title}"]
-      end
-      return '<span fgcolor="light green"><b>[' .. state .. ']</b> <small>' .. text .. '</small></span>'
-    end
-    return ""
-  end, 1)
--- http://git.sysphere.org/vicious/tree/README
-customization.widgets.mpdstatus = wibox.layout.constraint(customization.widgets.mpdstatus, "max", 180, nil)
-do
-    customization.widgets.mpdstatus:buttons(awful.util.table.join(
-    awful.button({ }, 1, function ()
-        awful.util.spawn("mpc toggle")
-    end),
-    awful.button({ }, 2, function ()
-        awful.util.spawn("mpc prev")
-    end),
-    awful.button({ }, 3, function ()
-        awful.util.spawn("mpc next")
-    end),
-    awful.button({ }, 4, function ()
-        awful.util.spawn("mpc seek -1%")
-    end),
-    awful.button({ }, 5, function ()
-        awful.util.spawn("mpc seek +1%")
-    end)
-    ))
-end
 
-customization.widgets.volume = wibox.widget.textbox()
-vicious.register(customization.widgets.volume, vicious.widgets.volume,
-  "<span fgcolor='cyan'>$1%$2</span>", 1, "Master")
-do
-    local prog="pavucontrol"
-    local started=false
-    customization.widgets.volume:buttons(awful.util.table.join(
-    awful.button({ }, 1, function ()
-        if started then
-            awful.util.spawn("pkill -f '" .. prog .. "'")
-        else
-            awful.util.spawn(prog)
-        end
-        started=not started
-    end),
-    awful.button({ }, 2, function ()
-        awful.util.spawn("amixer sset Mic toggle")
-    end),
-    awful.button({ }, 3, function ()
-        awful.util.spawn("amixer sset Master toggle")
-    end),
-    awful.button({ }, 4, function ()
-        awful.util.spawn("amixer sset Master 1%-")
-    end),
-    awful.button({ }, 5, function ()
-        awful.util.spawn("amixer sset Master 1%+")
-    end)
-    ))
-end
 
 customization.widgets.date = wibox.widget.textbox()
-vicious.register(customization.widgets.date, vicious.widgets.date, "%a %x %r %Z", 1)
+vicious.register(customization.widgets.date, vicious.widgets.date, "%Y-%M-%dT%H:%m:%S", 1)
 do
     local prog1="gnome-control-center datetime"
     local started1=false
