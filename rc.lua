@@ -365,7 +365,7 @@ end
 
 customization.func.system_lock = function ()
    local s
-   for s = 1, screen.count() do
+   for s in screen do
       awful.tag.viewnone(s)
    end
    awful.util.spawn("xtrlock")
@@ -1665,7 +1665,7 @@ end
 
 
 customization.widgets.date = wibox.widget.textbox()
-vicious.register(customization.widgets.date, vicious.widgets.date, "%Y-%M-%dT%H:%m:%S", 1)
+vicious.register(customization.widgets.date, vicious.widgets.date, "%Y-%m-%dT%H:%M:%S", 1)
 do
     local prog1="gnome-control-center datetime"
     local started1=false
@@ -2093,6 +2093,8 @@ awful.key({ modkey, }, "x", function() mymainmenu:toggle({keygrabber=true}) end)
 awful.key({ modkey, }, "X", function() mymainmenu:toggle({keygrabber=true}) end),
 
 uniarg:key_repeat({ modkey,           }, "Return", function () awful.util.spawn(tools.terminal) end),
+
+uniarg:key_repeat({ modkey, "Shift"}, "Return", function () awful.util.spawn("urxvtcd -fn xft:terminus:bold:size=18") end),
 
 uniarg:key_repeat({ modkey, "Mod1" }, "Return", function () awful.util.spawn("gksudo " .. tools.terminal) end),
 
